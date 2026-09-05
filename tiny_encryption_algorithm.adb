@@ -2,7 +2,7 @@ package body Tiny_Encryption_Algorithm is
    use type Interfaces.Unsigned_32;
 
    --  The magic constant used in the key scheduling (derived from the golden ratio).
-   Delta : constant Word := 16#9E3779B9#;
+   TEA_Delta : constant Word := 16#9E3779B9#;
 
    -----------------------------------------------------------------------------
    --  XXTEA Core Mixing Function (MX)
@@ -36,7 +36,7 @@ package body Tiny_Encryption_Algorithm is
    begin
       for I in 1 .. 32 loop
          pragma Unreferenced (I);
-         Sum := Sum + Delta;
+         Sum := Sum + TEA_Delta;
          V0  := V0 + (((Shift_Left (V1, 4) + Key (0)) xor (V1 + Sum)) xor (Shift_Right (V1, 5) + Key (1)));
          V1  := V1 + (((Shift_Left (V0, 4) + Key (2)) xor (V0 + Sum)) xor (Shift_Right (V0, 5) + Key (3)));
       end loop;
@@ -47,13 +47,13 @@ package body Tiny_Encryption_Algorithm is
    procedure TEA_Decrypt (Data : in out Block_64; Key : Key_128) is
       V0  : Word := Data (0);
       V1  : Word := Data (1);
-      Sum : Word := Delta * 32;
+      Sum : Word := TEA_Delta * 32;
    begin
       for I in 1 .. 32 loop
          pragma Unreferenced (I);
          V1  := V1 - (((Shift_Left (V0, 4) + Key (2)) xor (V0 + Sum)) xor (Shift_Right (V0, 5) + Key (3)));
          V0  := V0 - (((Shift_Left (V1, 4) + Key (0)) xor (V1 + Sum)) xor (Shift_Right (V1, 5) + Key (1)));
-         Sum := Sum - Delta;
+         Sum := Sum - TEA_Delta;
       end loop;
       Data (0) := V0;
       Data (1) := V1;
@@ -71,7 +71,7 @@ package body Tiny_Encryption_Algorithm is
       for I in 1 .. Num_Rounds loop
          pragma Unreferenced (I);
          V0  := V0 + ((((Shift_Left (V1, 4) xor Shift_Right (V1, 5)) + V1) xor (Sum + Key (Natural (Sum and 3)))));
-         Sum := Sum + Delta;
+         Sum := Sum + TEA_Delta;
          V1  := V1 + ((((Shift_Left (V0, 4) xor Shift_Right (V0, 5)) + V0) xor (Sum + Key (Natural (Shift_Right (Sum, 11) and 3)))));
       end loop;
       Data (0) := V0;
@@ -81,12 +81,12 @@ package body Tiny_Encryption_Algorithm is
    procedure XTEA_Decrypt (Data : in out Block_64; Key : Key_128; Num_Rounds : Positive := 32) is
       V0  : Word := Data (0);
       V1  : Word := Data (1);
-      Sum : Word := Delta * Word (Num_Rounds);
+      Sum : Word := TEA_Delta * Word (Num_Rounds);
    begin
       for I in 1 .. Num_Rounds loop
          pragma Unreferenced (I);
          V1  := V1 - ((((Shift_Left (V0, 4) xor Shift_Right (V0, 5)) + V0) xor (Sum + Key (Natural (Shift_Right (Sum, 11) and 3)))));
-         Sum := Sum - Delta;
+         Sum := Sum - TEA_Delta;
          V0  := V0 - ((((Shift_Left (V1, 4) xor Shift_Right (V1, 5)) + V1) xor (Sum + Key (Natural (Sum and 3)))));
       end loop;
       Data (0) := V0;
@@ -122,7 +122,7 @@ package body Tiny_Encryption_Algorithm is
          Z      := V (N - 1);
 
          while Rounds > 0 loop
-            Sum := Sum + Delta;
+            Sum := Sum + TEA_Delta;
             E   := Shift_Right (Sum, 2) and 3;
 
             for P in 0 .. N - 2 loop
@@ -163,7 +163,7 @@ package body Tiny_Encryption_Algorithm is
          end loop;
 
          Rounds := 6 + 52 / N;
-         Sum    := Word (Rounds) * Delta;
+         Sum    := Word (Rounds) * TEA_Delta;
          Y      := V (0);
 
          while Rounds > 0 loop
@@ -179,7 +179,7 @@ package body Tiny_Encryption_Algorithm is
             V (0) := V (0) - MX (Z, Y, Sum, 0, E, Key);
             Y     := V (0);
             
-            Sum    := Sum - Delta;
+            Sum    := Sum - TEA_Delta;
             Rounds := Rounds - 1;
          end loop;
 
