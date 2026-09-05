@@ -47,13 +47,10 @@ is
    -----------------------------------------------------------------------------
 
    --  XXTEA operates on variable-length blocks.
-   --  Precondition: The block must contain at least 2 words (64 bits).
    procedure XXTEA_Encrypt (Data : in out Word_Array; Key : Key_128)
-     with Global => null,
-          Pre    => Data'Length >= 2;
+     with Global => null;
 
    procedure XXTEA_Decrypt (Data : in out Word_Array; Key : Key_128)
-     with Global => null,
-          Pre    => Data'Length >= 2;
+     with Global => null;
 
 end Tiny_Encryption_Algorithm;
