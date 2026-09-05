@@ -1,4 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Interfaces; use type Interfaces.Unsigned_32;
 with Tiny_Encryption_Algorithm; use Tiny_Encryption_Algorithm;
 
 procedure Tests is
@@ -17,10 +18,10 @@ procedure Tests is
    end Check;
 
    --  Test Artifacts
-   Key_Zero : constant Key_128 := (0, 0, 0, 0);
-   Key_One  : constant Key_128 := (16#01020304#, 16#05060708#, 16#090A0B0C#, 16#0D0E0F00#);
-   B64_Zero : constant Block_64 := (0, 0);
-   B64_Pat  : constant Block_64 := (16#DEADBEEF#, 16#CAFEBABE#);
+   Key_Zero : constant Key_128 := [0, 0, 0, 0];
+   Key_One  : constant Key_128 := [16#01020304#, 16#05060708#, 16#090A0B0C#, 16#0D0E0F00#];
+   B64_Zero : constant Block_64 := [0, 0];
+   B64_Pat  : constant Block_64 := [16#DEADBEEF#, 16#CAFEBABE#];
 
    Block, Orig : Block_64;
 begin
@@ -103,7 +104,7 @@ begin
    --  TEST 7 - XXTEA Basic (2 words block)
    Put_Line ("TEST 7 - XXTEA Basic (2 words)");
    declare
-      Arr : Word_Array (0 .. 1) := (16#11111111#, 16#22222222#);
+      Arr : Word_Array (0 .. 1) := [16#11111111#, 16#22222222#];
       Org : constant Word_Array (0 .. 1) := Arr;
    begin
       XXTEA_Encrypt (Arr, Key_One);
@@ -116,7 +117,7 @@ begin
    --  TEST 8 - XXTEA Odd Block Size (3 words)
    Put_Line ("TEST 8 - XXTEA Odd Block Size (3 words)");
    declare
-      Arr : Word_Array (0 .. 2) := (1, 2, 3);
+      Arr : Word_Array (0 .. 2) := [1, 2, 3];
       Org : constant Word_Array (0 .. 2) := Arr;
    begin
       XXTEA_Encrypt (Arr, Key_One);
@@ -129,7 +130,7 @@ begin
    --  TEST 9 - XXTEA Large Block Size (10 words)
    Put_Line ("TEST 9 - XXTEA Large Block Size (10 words)");
    declare
-      Arr : Word_Array (1 .. 10) := (others => 16#ABCDEF01#);
+      Arr : Word_Array (1 .. 10) := [others => 16#ABCDEF01#];
       Org : constant Word_Array (1 .. 10) := Arr;
    begin
       XXTEA_Encrypt (Arr, Key_One);
@@ -142,7 +143,7 @@ begin
    --  TEST 10 - XXTEA Exception Trigger (Encrypt size < 2)
    Put_Line ("TEST 10 - XXTEA Exception Trigger (Encrypt 1 word)");
    declare
-      Arr : Word_Array (0 .. 0) := (others => 0);
+      Arr : Word_Array (0 .. 0) := [others => 0];
    begin
       Check ("10.1 Layout validates at length=1", Arr'Length = 1);
       XXTEA_Encrypt (Arr, Key_One);
@@ -187,21 +188,21 @@ begin
    --  TEST 13 - XXTEA Avalanche Check (Data Perturbation)
    Put_Line ("TEST 13 - XXTEA Avalanche Check (Data Perturbation)");
    declare
-      Arr1 : Word_Array (0 .. 3) := (1, 2, 3, 4);
-      Arr2 : Word_Array (0 .. 3) := (1, 2, 3, 5); -- Flip merely 1 bit on last word
+      Arr1 : Word_Array (0 .. 3) := [1, 2, 3, 4];
+      Arr2 : Word_Array (0 .. 3) := [1, 2, 3, 5]; -- Flip merely 1 bit on last word
    begin
       XXTEA_Encrypt (Arr1, Key_One);
       XXTEA_Encrypt (Arr2, Key_One);
       Check ("13.1 1-bit data shift propagates layout avalanche", Arr1 /= Arr2);
       Check ("13.2 Word index 0 affected by word index 3 change", Arr1 (0) /= Arr2 (0));
       XXTEA_Decrypt (Arr1, Key_One);
-      Check ("13.3 Decrypt completely restores array original format", Arr1 = (1, 2, 3, 4));
+      Check ("13.3 Decrypt completely restores array original format", Arr1 = [1, 2, 3, 4]);
    end;
 
    --  TEST 14 - XXTEA Non-Zero Bounds Preservation
    Put_Line ("TEST 14 - XXTEA Non-Zero Bounds Preservation");
    declare
-      Arr : Word_Array (100 .. 103) := (10, 20, 30, 40);
+      Arr : Word_Array (100 .. 103) := [10, 20, 30, 40];
       Org : constant Word_Array (100 .. 103) := Arr;
    begin
       Check ("14.1 Custom layout index mapped (First=100)", Arr'First = 100);
