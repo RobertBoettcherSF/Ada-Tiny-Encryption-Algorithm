@@ -35,6 +35,7 @@ package body Tiny_Encryption_Algorithm is
       Sum : Word := 0;
    begin
       for I in 1 .. 32 loop
+         pragma Unreferenced (I);
          Sum := Sum + Delta;
          V0  := V0 + (((Shift_Left (V1, 4) + Key (0)) xor (V1 + Sum)) xor (Shift_Right (V1, 5) + Key (1)));
          V1  := V1 + (((Shift_Left (V0, 4) + Key (2)) xor (V0 + Sum)) xor (Shift_Right (V0, 5) + Key (3)));
@@ -49,6 +50,7 @@ package body Tiny_Encryption_Algorithm is
       Sum : Word := Delta * 32;
    begin
       for I in 1 .. 32 loop
+         pragma Unreferenced (I);
          V1  := V1 - (((Shift_Left (V0, 4) + Key (2)) xor (V0 + Sum)) xor (Shift_Right (V0, 5) + Key (3)));
          V0  := V0 - (((Shift_Left (V1, 4) + Key (0)) xor (V1 + Sum)) xor (Shift_Right (V1, 5) + Key (1)));
          Sum := Sum - Delta;
@@ -67,6 +69,7 @@ package body Tiny_Encryption_Algorithm is
       Sum : Word := 0;
    begin
       for I in 1 .. Num_Rounds loop
+         pragma Unreferenced (I);
          V0  := V0 + ((((Shift_Left (V1, 4) xor Shift_Right (V1, 5)) + V1) xor (Sum + Key (Natural (Sum and 3)))));
          Sum := Sum + Delta;
          V1  := V1 + ((((Shift_Left (V0, 4) xor Shift_Right (V0, 5)) + V0) xor (Sum + Key (Natural (Shift_Right (Sum, 11) and 3)))));
@@ -81,6 +84,7 @@ package body Tiny_Encryption_Algorithm is
       Sum : Word := Delta * Word (Num_Rounds);
    begin
       for I in 1 .. Num_Rounds loop
+         pragma Unreferenced (I);
          V1  := V1 - ((((Shift_Left (V0, 4) xor Shift_Right (V0, 5)) + V0) xor (Sum + Key (Natural (Shift_Right (Sum, 11) and 3)))));
          Sum := Sum - Delta;
          V0  := V0 - ((((Shift_Left (V1, 4) xor Shift_Right (V1, 5)) + V1) xor (Sum + Key (Natural (Sum and 3)))));
@@ -96,7 +100,7 @@ package body Tiny_Encryption_Algorithm is
    procedure XXTEA_Encrypt (Data : in out Word_Array; Key : Key_128) is
       N : constant Natural := Data'Length;
    begin
-      --  Enforce bounds contract
+      --  Enforce bounds contract explicitly
       if N < 2 then
          raise Invalid_Block_Size;
       end if;
