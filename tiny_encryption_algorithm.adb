@@ -1,5 +1,5 @@
 package body Tiny_Encryption_Algorithm is
-   use type Interfaces.Unsigned_32;
+   use Interfaces;
 
    --  The magic constant used in the key scheduling (derived from the golden ratio).
    TEA_Delta : constant Word := 16#9E3779B9#;
